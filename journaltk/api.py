@@ -6,14 +6,21 @@ from pathlib import Path
 import bibtexparser  # >=2.0.0
 import typer
 from loguru import logger
-from thefuzz import fuzz
+
+from .utils import (
+    abbreviate_journal,
+    extract_doi_from_pdf,
+    extract_metadata_from_pdf,
+    fetch_metadata_from_doi,
+)
 
 
-logger.enable(__name__)
-logger.remove(0)
+logger.remove()
 logger.add(sys.stdout,
            level="INFO",
            format=("<level>{level}</level>: <level>{message}</level>"))
+
+logger.enable(__name__)
 
 
 app = typer.Typer()

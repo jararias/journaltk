@@ -1,20 +1,22 @@
 
+import json
+import importlib
 import re
 import sys
-import json
+from pathlib import Path
 
-import bibtexparser  # >=2.0.0
+import bibtexparser  # >=2.0.0b7
 import pikepdf
 import requests
 from loguru import logger
 from thefuzz import fuzz, process
 
 
-logger.enable(__name__)
-logger.remove(0)
+logger.remove()
 logger.add(sys.stdout,
            level="INFO",
            format=("<level>{level}</level>: <level>{message}</level>"))
+logger.enable(__name__)
 
 
 def extract_metadata_from_pdf(filename):
@@ -67,7 +69,7 @@ def fetch_metadata_from_doi(doi, format="bibtex"):
         metadata = req.text
 
         if format == "bibtex":
-            if (db := bibtexparser.parse_string(metadata)).entries:
+            if bibtexparser.parse_string(metadata).entries:
                 return metadata
 
         if format == "xml":
@@ -81,9 +83,10 @@ def append_bibtex(doi, filename):
 
 
 def abbreviate_journal(long_name, scorer=None):
-    with open("journals_abbrev/journals.json", "r") as f:
+    db_abbrev = importlib.resources.files("journaltk.abbrev")
+    with db_abbrev.joinpath("journals.json").open(mode="r") as f:
         journals = json.load(f)
-    with open("journals_abbrev/custom_journals.json", "r") as f:
+    with db_abbrev.joinpath("custom_journals.json").open(mode="r") as f:
         journals.update(json.load(f))
 
     name_match, score = process.extractOne(

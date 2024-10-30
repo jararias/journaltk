@@ -1,4 +1,4 @@
-bibtexparser>=2.0.0
+bibtexparser==2.0.0b7
 pikepdf
 requests
 loguru
