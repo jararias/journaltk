@@ -1,0 +1,6 @@
+bibtexparser>=2.0.0
+pikepdf
+requests
+loguru
+thefuzz
+typer
