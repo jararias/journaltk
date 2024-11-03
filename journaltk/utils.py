@@ -7,6 +7,7 @@ from pathlib import Path
 
 import bibtexparser  # >=2.0.0b7
 import pikepdf
+import pymupdf
 import requests
 from loguru import logger
 from thefuzz import fuzz, process
@@ -34,9 +35,27 @@ def extract_metadata_from_pdf(filename):
     return items
 
 
+def search_doi_in_pdf(filename):
+    with pymupdf.open(filename) as doc:
+        first_page = doc[0]
+        content = first_page.get_text("dict")
+        for block in content["blocks"]:
+            if "lines" not in block:
+                continue
+            for line in block.get("lines"):
+                for span in line.get("spans"):
+                    text = span.get("text")
+                    if (m:= re.search("https://.*doi\.org/(.*)", text)):
+                        return m.groups()[0]
+    return None
+
+
 def extract_doi_from_pdf(filename):
     metadata = extract_metadata_from_pdf(filename)
-    return metadata.get("doi", metadata.get("DOI", None))
+    doi = metadata.get("doi", metadata.get("DOI", None))
+    if doi is None:
+        doi = search_doi_in_pdf(filename)
+    return doi
 
 
 def fetch_metadata_from_doi(doi, format="bibtex"):
