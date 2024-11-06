@@ -29,7 +29,7 @@ app = typer.Typer()
 @app.command("bibtex", help="get bibtex from doi")
 def __search_bibtex__(
     doi: str = typer.Argument(help="doi number"),
-    abbrev_journal: bool = typer.Option(False, "--abbreviate-journal",
+    abbrev_journal: bool = typer.Option(True, "--abbreviate-journal",
                                         help="use abbreviated journal's name")
 ):
 
@@ -42,7 +42,7 @@ def __search_bibtex__(
                  if abbrev_journal and (name.casefold() == "journal")
                  else field.value)
         pattern = patterns[name.casefold() == "month"]
-        s_out += pattern.format(name.lower(), value)
+        s_out += f"{pattern.format(name.lower(), value)},"
     s_out += "}\n"
     print(s_out)
     sys.exit(0)
