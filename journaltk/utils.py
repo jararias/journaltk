@@ -47,7 +47,7 @@ def search_doi_in_pdf(filename):
                     text = span.get("text")
                     if (m := re.search("http[s]*://.*doi\.org/(.*)", text)):
                         return m.groups()[0].strip()
-                    if (m := re.search("DOI:(.*)", text, re.IGNORECASE)):
+                    if (m := re.search("DOI[:]*(.*)", text, re.IGNORECASE)):
                         return m.groups()[0].strip()
     return None
 
