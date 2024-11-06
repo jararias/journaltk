@@ -41,8 +41,8 @@ def __search_bibtex__(
         value = (abbreviate_journal(field.value)
                  if abbrev_journal and (name.casefold() == "journal")
                  else field.value)
-        pattern = patterns[name.casefold() == "month"]
-        s_out += f"{pattern.format(name.lower(), value)},"
+        pattern = patterns[name.casefold() == "month"].removesuffix("\n")
+        s_out += f"{pattern.format(name.lower(), value)},\n"
     s_out += "}\n"
     print(s_out)
     sys.exit(0)
