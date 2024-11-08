@@ -28,11 +28,14 @@ app = typer.Typer()
 
 @app.command("bibtex", help="get bibtex from doi")
 def __search_bibtex__(
-    doi: str = typer.Argument(help="doi number"),
+    doi_or_pdf: str = typer.Argument(help="doi number or pdf filename"),
     abbrev_journal: bool = typer.Option(True, "--abbreviate-journal",
                                         help="use abbreviated journal's name")
 ):
 
+    doi = doi_or_pdf
+    if Path(doi).exists():
+        doi = extract_doi_from_pdf(doi)
     entries = fetch_metadata_from_doi(doi, "bibtex")
     entry = bibtexparser.parse_string(entries).entries[0]
     patterns= ("  {}={{{}}}\n", "  {}={}\n")
